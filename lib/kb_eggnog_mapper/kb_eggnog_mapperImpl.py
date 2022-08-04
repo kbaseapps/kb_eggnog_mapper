@@ -7,10 +7,10 @@ from installed_clients.KBaseReportClient import KBaseReport
 #END_HEADER
 
 
-class kb_eggnog_mapper:
+class kb_genetree:
     '''
     Module Name:
-    kb_eggnog_mapper
+    kb_genetree
 
     Module Description:
     A KBase module: kb_eggnog_mapper
@@ -23,8 +23,8 @@ class kb_eggnog_mapper:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = ""
+    GIT_URL = "https://github.com/kbaseapps/kb_eggnog_mapper"
+    GIT_COMMIT_HASH = "02195ab7da98168eb60695eeaf0d2021e5b3bffa"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -41,29 +41,27 @@ class kb_eggnog_mapper:
         pass
 
 
-    def run_kb_eggnog_mapper(self, ctx, params):
+    def run_eggnog_mapper(self, ctx, params):
         """
-        This example function accepts any number of parameters and returns results in a KBaseReport
-        :param params: instance of mapping from String to unspecified object
-        :returns: instance of type "ReportResults" -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
+        :param params: instance of type "EggnogMapper_Input"
+           (run_eggnog_mapper() ** ** run eggnog-mapper on a collection of
+           genomes and/or AMAs) -> structure: parameter "workspace_name" of
+           type "workspace_name" (** Common types), parameter "workspace_id"
+           of type "workspace_id", parameter "input_targets_ref" of type
+           "data_obj_ref", parameter "novel_fams" of type "bool", parameter
+           "genome_disp_name_config" of String
+        :returns: instance of type "ReportResults" (** Report Results) ->
+           structure: parameter "report_name" of String, parameter
+           "report_ref" of String
         """
         # ctx is the context object
         # return variables are: output
-        #BEGIN run_kb_eggnog_mapper
-        report = KBaseReport(self.callback_url)
-        report_info = report.create({'report': {'objects_created':[],
-                                                'text_message': params['parameter_1']},
-                                                'workspace_name': params['workspace_name']})
-        output = {
-            'report_name': report_info['name'],
-            'report_ref': report_info['ref'],
-        }
-        #END run_kb_eggnog_mapper
+        #BEGIN run_eggnog_mapper
+        #END run_eggnog_mapper
 
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
-            raise ValueError('Method run_kb_eggnog_mapper return value ' +
+            raise ValueError('Method run_eggnog_mapper return value ' +
                              'output is not type dict as required.')
         # return the results
         return [output]
