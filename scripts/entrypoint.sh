@@ -52,7 +52,7 @@ elif [ "${1}" = "init" ] ; then
     $cmd
   done
   
-  if [ -s "$EGGNOG_DB_DIR/eggnog.db" -a -s "$EGGNOG_DB_DIR/eggnog.taxa.db" -a -s "$EGGNOG_DB_DIR/eggnog.taxa.db.traverse.pkl" -a -s "$EGGNOG_DB_DIR/eggnog_proteins.dmnd" -a -s "$EGGNOG_DB_DIR/novel_fams.dmnd" -a -s "$EGGNOG_DB_DIR/mmseqs/mmseqs.db" -a -s "$EGGNOG_DB_DIR/Pfam-A.hmm" ] ; then
+  if [ -s "$EGGNOG_DB_DIR/eggnog.db" -a -s "$EGGNOG_DB_DIR/eggnog.taxa.db" -a -s "$EGGNOG_DB_DIR/eggnog.taxa.db.traverse.pkl" -a -s "$EGGNOG_DB_DIR/eggnog_proteins.dmnd" -a -s "$EGGNOG_DB_DIR/novel_fams.dmnd" -a -s "$EGGNOG_DB_DIR/mmseqs/mmseqs.db" -a -s "$EGGNOG_DB_DIR/pfam/Pfam-A.hmm" ] ; then
     echo "DATA DOWNLOADED SUCCESSFULLY"
     touch /data/__READY__
   else
