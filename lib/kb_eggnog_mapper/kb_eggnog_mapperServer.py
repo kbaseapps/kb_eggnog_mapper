@@ -45,14 +45,14 @@ def get_config():
     retconfig = {}
     config = ConfigParser()
     config.read(get_config_file())
-    for nameval in config.items(get_service_name() or 'kb_genetree'):
+    for nameval in config.items(get_service_name() or 'kb_eggnog_mapper'):
         retconfig[nameval[0]] = nameval[1]
     return retconfig
 
 config = get_config()
 
-from kb_eggnog_mapper.kb_eggnog_mapperImpl import kb_genetree  # noqa @IgnorePep8
-impl_kb_genetree = kb_genetree(config)
+from kb_eggnog_mapper.kb_eggnog_mapperImpl import kb_eggnog_mapper  # noqa @IgnorePep8
+impl_kb_eggnog_mapper = kb_eggnog_mapper(config)
 
 
 class JSONObjectEncoder(json.JSONEncoder):
@@ -327,7 +327,7 @@ class Application(object):
                                    context['method'], context['call_id'])
 
     def __init__(self):
-        submod = get_service_name() or 'kb_genetree'
+        submod = get_service_name() or 'kb_eggnog_mapper'
         self.userlog = log.log(
             submod, ip_address=True, authuser=True, module=True, method=True,
             call_id=True, changecallback=self.logcallback,
@@ -338,12 +338,12 @@ class Application(object):
         self.serverlog.set_log_level(6)
         self.rpc_service = JSONRPCServiceCustom()
         self.method_authentication = dict()
-        self.rpc_service.add(impl_kb_genetree.run_eggnog_mapper,
-                             name='kb_genetree.run_eggnog_mapper',
+        self.rpc_service.add(impl_kb_eggnog_mapper.run_eggnog_mapper,
+                             name='kb_eggnog_mapper.run_eggnog_mapper',
                              types=[dict])
-        self.method_authentication['kb_genetree.run_eggnog_mapper'] = 'required'  # noqa
-        self.rpc_service.add(impl_kb_genetree.status,
-                             name='kb_genetree.status',
+        self.method_authentication['kb_eggnog_mapper.run_eggnog_mapper'] = 'required'  # noqa
+        self.rpc_service.add(impl_kb_eggnog_mapper.status,
+                             name='kb_eggnog_mapper.status',
                              types=[dict])
         authurl = config.get(AUTH) if config else None
         self.auth_client = _KBaseAuth(authurl)
@@ -398,7 +398,7 @@ class Application(object):
                             err = JSONServerError()
                             err.data = (
                                 'Authentication required for ' +
-                                'kb_genetree ' +
+                                'kb_eggnog_mapper ' +
                                 'but no authentication header was passed')
                             raise err
                         elif token is None and auth_req == 'optional':

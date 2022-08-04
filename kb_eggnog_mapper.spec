@@ -2,7 +2,7 @@
 A KBase module: kb_eggnog_mapper
 */
 
-module kb_genetree {
+module kb_eggnog_mapper {
 
         
     /*
@@ -31,7 +31,7 @@ module kb_genetree {
     typedef structure {
         workspace_name  workspace_name;
         workspace_id    workspace_id;
-        data_obj_ref    input_targets_ref;  /* Genome, AMA, GenomeSet, SpeciesTree */
+        data_obj_ref    target_refs;  /* Genome, AMA, GenomeSet, SpeciesTree */
         bool            novel_fams;
         string          genome_disp_name_config;
     } EggnogMapper_Input;

@@ -51,6 +51,13 @@ elif [ "${1}" = "init" ] ; then
     echo $cmd
     $cmd
   done
+
+  echo "ls -l $EGGNOG_DB_DIR"
+  ls -l $EGGNOG_DB_DIR
+  echo "ls -l $EGGNOG_DB_DIR/mmseqs"
+  ls -l $EGGNOG_DB_DIR/mmseqs
+  echo "ls -l $EGGNOG_DB_DIR/pfam"
+  ls -l $EGGNOG_DB_DIR/pfam
   
   if [ -s "$EGGNOG_DB_DIR/eggnog.db" -a -s "$EGGNOG_DB_DIR/eggnog.taxa.db" -a -s "$EGGNOG_DB_DIR/eggnog.taxa.db.traverse.pkl" -a -s "$EGGNOG_DB_DIR/eggnog_proteins.dmnd" -a -s "$EGGNOG_DB_DIR/novel_fams.dmnd" -a -s "$EGGNOG_DB_DIR/mmseqs/mmseqs.db" -a -s "$EGGNOG_DB_DIR/pfam/Pfam-A.hmm" ] ; then
     echo "DATA DOWNLOADED SUCCESSFULLY"

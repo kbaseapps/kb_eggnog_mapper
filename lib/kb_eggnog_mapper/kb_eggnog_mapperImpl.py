@@ -7,10 +7,10 @@ from installed_clients.KBaseReportClient import KBaseReport
 #END_HEADER
 
 
-class kb_genetree:
+class kb_eggnog_mapper:
     '''
     Module Name:
-    kb_genetree
+    kb_eggnog_mapper
 
     Module Description:
     A KBase module: kb_eggnog_mapper
@@ -24,7 +24,7 @@ class kb_genetree:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_eggnog_mapper"
-    GIT_COMMIT_HASH = "02195ab7da98168eb60695eeaf0d2021e5b3bffa"
+    GIT_COMMIT_HASH = "c481b89ce18aa70825f6b7b558ec6c24ff3bf603"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -47,7 +47,7 @@ class kb_genetree:
            (run_eggnog_mapper() ** ** run eggnog-mapper on a collection of
            genomes and/or AMAs) -> structure: parameter "workspace_name" of
            type "workspace_name" (** Common types), parameter "workspace_id"
-           of type "workspace_id", parameter "input_targets_ref" of type
+           of type "workspace_id", parameter "target_refs" of type
            "data_obj_ref", parameter "novel_fams" of type "bool", parameter
            "genome_disp_name_config" of String
         :returns: instance of type "ReportResults" (** Report Results) ->
