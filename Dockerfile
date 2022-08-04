@@ -15,10 +15,6 @@ RUN apt-get upgrade -y
 RUN sed -i 's/\(.*DST_Root_CA_X3.crt\)/!\1/' /etc/ca-certificates.conf
 RUN update-ca-certificates
 
-# add wget
-RUN apt-get install -y wget
-
-
 # -----------------------------------------
 
 COPY ./ /kb/module
