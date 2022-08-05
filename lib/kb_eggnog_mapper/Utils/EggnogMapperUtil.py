@@ -477,7 +477,10 @@ class EggnogMapperUtil:
         base_filename = re.sub(r'\.faa$', '', base_filename)
             
         #return os.path.join(output_dir, 'chunk_'+str(chunk)+'-'+mode)
-        return os.path.join(output_dir, base_filename+'-'+mode)
+        db = 'eggnog5'
+        if mode == 'novel_fams':
+            db = 'novel_fams'
+        return os.path.join(output_dir, base_filename+'-'+db)
 
 
     # _build_EMAPPER_cmd()
