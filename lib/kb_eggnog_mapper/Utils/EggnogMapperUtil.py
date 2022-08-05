@@ -88,8 +88,8 @@ class EggnogMapperUtil:
         except:
             raise ValueError ("Failed to instantiate KBaseReport client")
         try:
-            DOTFU_SERVICE_VER = 'release'
-            #DOTFU_SERVICE_VER = 'beta'  # DEBUG
+            #DOTFU_SERVICE_VER = 'release'
+            DOTFU_SERVICE_VER = 'beta'  # DEBUG
             self.DOTFU = KBaseDataObjectToFileUtils (url=self.callbackURL, token=self.ctx['token'], service_ver=DOTFU_SERVICE_VER)
         except:
             raise ValueError ("Failed to instantiate DataObjectToFileUtils client")
@@ -216,7 +216,7 @@ class EggnogMapperUtil:
                 'record_desc_pattern': '[%%genome_id%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        1000,
+                'id_len_limit':        49,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq']
                 }
 
@@ -257,7 +257,7 @@ class EggnogMapperUtil:
                 'record_desc_pattern': '[%%genome_ref%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        1000,
+                'id_len_limit':        49,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq'],
                 'merge_fasta_files':   'TRUE'
                 }
@@ -303,7 +303,7 @@ class EggnogMapperUtil:
                 'record_desc_pattern': '[%%genome_ref%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        1000,
+                'id_len_limit':        49,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq'],
                 'merge_fasta_files':   'TRUE'
                 }
@@ -348,7 +348,7 @@ class EggnogMapperUtil:
                 'record_desc_pattern': '[%%genome_id%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        1000,
+                'id_len_limit':        49,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq']
                 }
 
@@ -472,7 +472,7 @@ class EggnogMapperUtil:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        base_filename = re.sub(r'^\.*\/', '', target_fasta_file_path)
+        base_filename = re.sub(r'^.*\/', '', target_fasta_file_path)
         base_filename = re.sub(r'\.fasta$', '', base_filename)
         base_filename = re.sub(r'\.faa$', '', base_filename)
             
@@ -544,10 +544,29 @@ class EggnogMapperUtil:
         return 'Success'
 
 
+    # _unshorten_feature_IDs()
+    #
+    def _unshorten_feature_IDs (self, annot_path, short_ID_mapping):
+        buf = []
+        with open(annot_path, 'r') as annot_h:
+            for annot_line in annot_h:
+                if not annot_line.startswith('#'):
+                    fid = annot_line.split()[0]
+                    if fid in short_ID_mapping:
+                        new_fid = short_ID_mapping[fid]
+                        annot_line = re.sub(fid, new_fid, annot_line)
+                buf.append(annot_line)
+        with (open, annot_path, 'w') as annot_h:
+            annot_h.writelines(buf)
+
+        return annot_path
+    
+
     #### run_EMAPPER(): actual invocation
     ##
     def run_EMAPPER (self, 
                      target_fasta_file_path = None,
+                     target_feature_info = None,
                      #chunk = None,
                      novel_fams = None, 
                      cpus = None):
@@ -591,9 +610,16 @@ class EggnogMapperUtil:
             for annot_type in ['annotations', 'hits', 'seed_orthologs']:
                 annot_path = output_annot_base_path+'.emapper.'+annot_type
                 if os.path.exists(annot_path) and os.path.getsize(annot_path) > 0:
+
+                    # fix short IDs
+                    annot_path = self._unshorten_feature_IDs (annot_path, target_feature_info['short_id_to_rec_id'])
+                    
+                    # compress
                     with open(annot_path, 'rb') as f_in, \
                          gzip.open(annot_path+'.gz', 'wb') as f_out:
                         f_out.writelines(f_in)
+
+                    # capture filename and upload to shock
                     annot_paths.append(annot_path)
                     try:
                         bulk_save_info.append(dfu.file_to_shock({'file_path': annot_path+'.gz',
@@ -730,6 +756,7 @@ class EggnogMapperUtil:
 
             EMAPPER_output_results = self.run_EMAPPER (
                 target_fasta_file_path = targets_fasta_file_path[target_ref],
+                target_feature_info = targets_feature_info[target_ref],
                 #chunk = '0000-9999',
                 novel_fams = params['novel_fams'],
                 cpus = self.cpus
