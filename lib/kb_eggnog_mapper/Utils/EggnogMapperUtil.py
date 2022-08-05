@@ -3,6 +3,7 @@ import os
 import re
 import subprocess
 import sys
+import gzip
 import traceback
 import uuid
 from datetime import datetime
@@ -211,11 +212,11 @@ class EggnogMapperUtil:
                 'invalid_msgs':        invalid_msgs,
                 'residue_type':        seq_type,
                 'feature_type':        'ALL',
-                'record_id_pattern':   '%%feature_id%%',
+                'record_id_pattern':   '%%genome_ref%%'+self.genome_id_feature_id_delim+'%%feature_id%%',
                 'record_desc_pattern': '[%%genome_id%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        49,
+                'id_len_limit':        1000,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq']
                 }
 
@@ -256,7 +257,7 @@ class EggnogMapperUtil:
                 'record_desc_pattern': '[%%genome_ref%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        49,
+                'id_len_limit':        1000,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq'],
                 'merge_fasta_files':   'TRUE'
                 }
@@ -302,7 +303,7 @@ class EggnogMapperUtil:
                 'record_desc_pattern': '[%%genome_ref%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'id_len_limit':        49,
+                'id_len_limit':        1000,
                 'write_off_code_prot_seq': params['write_off_code_prot_seq'],
                 'merge_fasta_files':   'TRUE'
                 }
@@ -343,12 +344,12 @@ class EggnogMapperUtil:
                 'invalid_msgs':        invalid_msgs,
                 'residue_type':        seq_type,
                 'feature_type':        'ALL',
-                'record_id_pattern':   '%%feature_id%%',
+                'record_id_pattern':   '%%genome_ref%%'+self.genome_id_feature_id_delim+'%%feature_id%%',
                 'record_desc_pattern': '[%%genome_id%%]',
                 'case':                'upper',
                 'linewrap':            50,
-                'write_off_code_prot_seq': params['write_off_code_prot_seq'],
-                'id_len_limit':        49
+                'id_len_limit':        1000,
+                'write_off_code_prot_seq': params['write_off_code_prot_seq']
                 }
 
             AnnotatedMetagenomeAssemblyToFASTA_retVal = self.DOTFU.AnnotatedMetagenomeAssemblyToFASTA (AnnotatedMetagenomeAssemblyToFASTA_params)
@@ -464,13 +465,19 @@ class EggnogMapperUtil:
 
     # _set_output_path()
     #
-    def _set_output_path (self, chunk, mode):
+    #def _set_output_path (self, chunk, mode):
+    def _set_output_path (self, target_fasta_file_path, mode):
         timestamp = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds()*1000)
         output_dir = os.path.join(self.scratch,'output.'+str(timestamp))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        return os.path.join(output_dir, 'chunk_'+str(chunk)+'-'+mode)
+        base_filename = re.sub(r'^\.*\/', '', target_fasta_file_path)
+        base_filename = re.sub(r'\.fasta$', '', base_filename)
+        base_filename = re.sub(r'\.faa$', '', base_filename)
+            
+        #return os.path.join(output_dir, 'chunk_'+str(chunk)+'-'+mode)
+        return os.path.join(output_dir, base_filename+'-'+mode)
 
 
     # _build_EMAPPER_cmd()
@@ -541,7 +548,7 @@ class EggnogMapperUtil:
     ##
     def run_EMAPPER (self, 
                      target_fasta_file_path = None,
-                     chunk = None,
+                     #chunk = None,
                      novel_fams = None, 
                      cpus = None):
         console = []
@@ -556,7 +563,8 @@ class EggnogMapperUtil:
         for mode in run_modes:
                     
             # set the output path
-            output_annot_base_path = self._set_output_path (chunk, mode)
+            #output_annot_base_path = self._set_output_path (chunk, mode)
+            output_annot_base_path = self._set_output_path (target_fasta_file_path, mode)
 
             # construct the EMAPPER command
             search_novel_fams = False
@@ -574,20 +582,27 @@ class EggnogMapperUtil:
                 self.log(console, EMAPPER_exec_return_msg)
                 raise ValueError ("FAILURE executing EMAPPER with command: \n\n"+"\n".join(emapper_cmd))
 
+            # TODO:
+            # modify genome and AMA objects with func annot
+            #
+            
             # upload EMAPPER output
             dfu = DFUClient(self.callbackURL)
             for annot_type in ['annotations', 'hits', 'seed_orthologs']:
                 annot_path = output_annot_base_path+'.emapper.'+annot_type
                 if os.path.exists(annot_path) and os.path.getsize(annot_path) > 0:
+                    with open(annot_path, 'rb') as f_in, \
+                         gzip.open(annot_path+'.gz', 'wb') as f_out:
+                        f_out.writelines(f_in)
                     annot_paths.append(annot_path)
                     try:
-                        bulk_save_info.append(dfu.file_to_shock({'file_path': annot_path,
+                        bulk_save_info.append(dfu.file_to_shock({'file_path': annot_path+'.gz',
                                                                  # DEBUG
                                                                  # 'make_handle': 0,
                                                                  # 'pack': 'zip'})
                                                                  'make_handle': 0}))
                     except:
-                        raise ValueError ('error uploading '+annot_path+' file')
+                        raise ValueError ('error uploading '+annot_path+'.gz'+' file')
 
         # return output
         return {
@@ -637,8 +652,8 @@ class EggnogMapperUtil:
                 annot_path = annot_path_list[file_i]
                 annot_path = re.sub (r'.*\/', '', annot_path)
                 reportObj['file_links'].append({'shock_id': bulk_save_info['shock_id'],
-                                                'name': annot_path,
-                                                'label': annot_path})
+                                                'name': annot_path+'.gz',
+                                                'label': annot_path+'.gz'})
 
         # complete report
         reportObj['objects_created'] = objects_created
@@ -715,7 +730,7 @@ class EggnogMapperUtil:
 
             EMAPPER_output_results = self.run_EMAPPER (
                 target_fasta_file_path = targets_fasta_file_path[target_ref],
-                chunk = '0000-9999',
+                #chunk = '0000-9999',
                 novel_fams = params['novel_fams'],
                 cpus = self.cpus
             )
