@@ -556,8 +556,9 @@ class EggnogMapperUtil:
                         new_fid = short_ID_mapping[fid]
                         annot_line = re.sub(fid, new_fid, annot_line)
                 buf.append(annot_line)
-        with (open, annot_path, 'w') as annot_h:
+        with open(annot_path, 'w') as annot_h:
             annot_h.writelines(buf)
+        buf = []
 
         return annot_path
     
