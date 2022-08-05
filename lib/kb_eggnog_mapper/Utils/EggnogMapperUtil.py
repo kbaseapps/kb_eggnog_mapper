@@ -344,7 +344,7 @@ class EggnogMapperUtil:
                 'invalid_msgs':        invalid_msgs,
                 'residue_type':        seq_type,
                 'feature_type':        'ALL',
-                'record_id_pattern':   '%%genome_ref%%'+self.genome_id_feature_id_delim+'%%feature_id%%',
+                'record_id_pattern':   '%%ama_ref%%'+self.genome_id_feature_id_delim+'%%feature_id%%',
                 'record_desc_pattern': '[%%genome_id%%]',
                 'case':                'upper',
                 'linewrap':            50,
