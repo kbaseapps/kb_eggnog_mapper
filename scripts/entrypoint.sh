@@ -27,11 +27,23 @@ elif [ "${1}" = "init" ] ; then
   mkdir -p $EGGNOG_DB_DIR
   cd $EGGNOG_DB_DIR
 
-  EGGNOG_DB_BASE_URL="http://eggnog5.embl.de/download/emapperdb-$EGGNOG_DB_VER/"
+  EGGNOG_DB_BASE_URL="http://eggnog5.embl.de/download/emapperdb-$EGGNOG_DB_VER"
+  EGGNOG_DB_BASE_URL_NOVEL_FAMS="http://eggnog5.embl.de/download/novel_fams"
 
+  
   # regular gzips
   for DB in eggnog.db eggnog_proteins.dmnd ; do
     cmd="curl -o $DB.gz $EGGNOG_DB_BASE_URL/$DB.gz"
+    echo $cmd
+    $cmd
+    cmd="gunzip $DB.gz"
+    echo $cmd
+    $cmd
+  done
+
+  # novel fams
+  for DB in novel_fams.dmnd ; do
+    cmd="curl -o $DB.gz $EGGNOG_DB_BASE_URL_NOVEL_FAMS/$DB.gz"
     echo $cmd
     $cmd
     cmd="gunzip $DB.gz"
