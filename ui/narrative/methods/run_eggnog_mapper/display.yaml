@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: Annotate with eggNOG-mapper v2.1.9
+name: Annotate with eggNOG-mapper - v2.1.9
 
 tooltip: |
     Annotate Genomes, GenomeSets, Species Trees, and Annotated Metagenome Assemblies with eggNOG-mapper
@@ -52,6 +52,11 @@ publications :
         display-text: |
             Carlos P Cantalapiedra, Ana Hernández-Plaza, Ivica Letunic, Peer Bork, Jaime Huerta-Cepas.  eggNOG-mapper v2: Functional Annotation, Orthology Assignments, and Domain Prediction at the Metagenomic Scale.  Molecular Biology and Evolution, Volume 38, Issue 12, December 2021, Pages 5825–5829.
         link: https://doi.org/10.1186/1471-2105-10-421
+
+    -
+        display-text: |
+            Álvaro Rodríguez del Río, Joaquín Giner-Lamia, Carlos P. Cantalapiedra, Jorge Botas, Ziqi Deng, Ana Hernández-Plaza, Lucas Paoli, Thomas S.B. Schmidt, Shinichi Sunagawa, Peer Bork, Luis Pedro Coelho, Jaime Huerta-Cepas. Functional and evolutionary significance of unknown genes from uncultivated taxa.  BioRxiv (2022). https://www.biorxiv.org/content/10.1101/2022.01.26.477801v1
+        link: https://doi.org/10.1101/2022.01.26.477801
 
     -
         display-text: |

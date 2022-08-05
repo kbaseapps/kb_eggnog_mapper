@@ -15,6 +15,10 @@ RUN apt-get upgrade -y
 RUN sed -i 's/\(.*DST_Root_CA_X3.crt\)/!\1/' /etc/ca-certificates.conf
 RUN update-ca-certificates
 
+# needed by emapper.py
+RUN conda install -y psutil
+RUN pip install Bio
+
 # -----------------------------------------
 
 COPY ./ /kb/module

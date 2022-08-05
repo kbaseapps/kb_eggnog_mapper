@@ -2,8 +2,23 @@
 #BEGIN_HEADER
 import logging
 import os
+import re
+import subprocess
+import sys
+import traceback
+import uuid
+from datetime import datetime
+from pprint import pformat
 
+# SDK Utils
+from installed_clients.KBaseDataObjectToFileUtilsClient import KBaseDataObjectToFileUtils
+from installed_clients.DataFileUtilClient import DataFileUtil as DFUClient
 from installed_clients.KBaseReportClient import KBaseReport
+from installed_clients.WorkspaceClient import Workspace as workspaceService
+
+# EggnogMapperUtil
+from kb_eggnog_mapper.Utils.EggnogMapperUtil import EggnogMapperUtil
+
 #END_HEADER
 
 
@@ -24,7 +39,7 @@ class kb_eggnog_mapper:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_eggnog_mapper"
-    GIT_COMMIT_HASH = "c481b89ce18aa70825f6b7b558ec6c24ff3bf603"
+    GIT_COMMIT_HASH = "e80aadc84a9663e2421ce90545bc7e0939b4252f"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -33,8 +48,23 @@ class kb_eggnog_mapper:
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
-        self.callback_url = os.environ['SDK_CALLBACK_URL']
-        self.shared_folder = config['scratch']
+        self.config = config
+        self.workspaceURL = config['workspace-url']
+        self.shockURL = config['shock-url']
+        self.handleURL = config['handle-service-url']
+        self.serviceWizardURL = config['srv-wiz-url']
+        self.callbackURL = os.environ.get('SDK_CALLBACK_URL')
+        if self.callbackURL == None:
+            raise ValueError ("SDK_CALLBACK_URL not set in environment")
+
+        self.EMAPPER_VER = config['emapper_ver']
+        
+        self.scratch = os.path.abspath(config['scratch'])
+        if self.scratch == None:
+            self.scratch = os.path.join('/kb','module','local_scratch')
+        if not os.path.exists(self.scratch):
+            os.makedirs(self.scratch)
+
         logging.basicConfig(format='%(created)s %(levelname)s: %(message)s',
                             level=logging.INFO)
         #END_CONSTRUCTOR
@@ -57,6 +87,9 @@ class kb_eggnog_mapper:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_eggnog_mapper
+        search_tool_name = 'eggnog_mapper_v'+self.EMAPPER_VER
+        emu = EggnogMapperUtil(self.config, ctx)
+        output = emu.run_EMAPPER_App (search_tool_name, params)
         #END run_eggnog_mapper
 
         # At some point might do deeper type checking...
