@@ -18,7 +18,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": [ "KBaseGenomes.Genome","KBaseSearch.GenomeSet","KBaseTrees.Tree","KBaseMetagenomes.AnnotatedMetagenomeAssembly" ]
+                "valid_ws_types": [ "KBaseSearch.GenomeSet","KBaseTrees.Tree","KBaseMetagenomes.AnnotatedMetagenomeAssembly" ]
             }
         },
         {
